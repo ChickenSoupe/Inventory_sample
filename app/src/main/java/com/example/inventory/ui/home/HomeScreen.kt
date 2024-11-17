@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2023 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.example.inventory.ui.home
 
 import androidx.compose.foundation.clickable
@@ -41,13 +25,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -84,7 +65,6 @@ fun HomeScreen(
 ) {
     val homeUiState by viewModel.homeUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    val searchQuery = remember { mutableStateOf("") }
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -112,39 +92,12 @@ fun HomeScreen(
             }
         },
     ) { innerPadding ->
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
-        ) {
-            TextField(
-                value = searchQuery.value,
-                onValueChange = { searchQuery.value = it },
-                label = { Text(stringResource(R.string.search)) },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            val filteredItems = homeUiState.itemList.filter {
-                it.name.lowercase().contains(searchQuery.value.lowercase())
-            }
-
-            if (filteredItems.isEmpty()) {
-                Text(
-                    text = stringResource(R.string.no_item_description),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(innerPadding),
-                )
-            } else {
-                InventoryList(
-                    itemList = filteredItems,
-                    onItemClick = { navigateToItemUpdate(it.id) },
-                    contentPadding = innerPadding,
-                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
-                )
-            }
-        }
+        HomeBody(
+            itemList = homeUiState.itemList,
+            onItemClick = navigateToItemUpdate,
+            modifier = modifier.fillMaxSize(),
+            contentPadding = innerPadding,
+        )
     }
 }
 
@@ -159,42 +112,70 @@ private fun HomeBody(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier,
     ) {
-        if (itemList.isEmpty()) {
-            Text(
-                text = stringResource(R.string.no_item_description),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(contentPadding),
-            )
-        } else {
-            InventoryList(
-                itemList = itemList,
-                onItemClick = { onItemClick(it.id) },
-                contentPadding = contentPadding,
-                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
-            )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier,
+        ) {
+            if (itemList.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.no_item_description),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(contentPadding),
+                )
+            } else {
+                InventoryList(
+                    itemList = itemList,
+                    onItemClick = { onItemClick(it.id) },
+                    contentPadding = contentPadding,
+                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
+                )
+            }
         }
     }
 }
 
-@Composable
+    @Composable
 private fun InventoryList(
     itemList: List<Item>,
     onItemClick: (Item) -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = contentPadding
-    ) {
-        items(items = itemList, key = { it.id }) { item ->
-            InventoryItem(item = item,
-                modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.padding_small))
-                    .clickable { onItemClick(item) })
+    val groupedItems = itemList.groupBy { it.category }
+
+        LazyColumn(
+            modifier = modifier,
+            contentPadding = contentPadding
+        ) {
+            groupedItems.forEach { (category, itemsInCategory) ->
+                item {
+                    CategoryHeader(category = category)
+                }
+                items(items = itemsInCategory, key = { it.id }) { item ->
+                    InventoryItem(
+                        item = item,
+                        modifier = Modifier
+                            .padding(dimensionResource(id = R.dimen.padding_small))
+                            .clickable { onItemClick(item) }
+                    )
+                }
+            }
         }
     }
+
+@Composable
+private fun CategoryHeader(category: String) {
+    Text(
+        text = category,
+        style = MaterialTheme.typography.headlineMedium,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                vertical = dimensionResource(id = R.dimen.padding_medium),
+                horizontal = dimensionResource(id = R.dimen.padding_large)
+            )
+    )
 }
 
 @Composable
@@ -234,7 +215,7 @@ private fun InventoryItem(
 fun HomeBodyPreview() {
     InventoryTheme {
         HomeBody(listOf(
-            Item(1, "Game", 100.0, 20), Item(2, "Pen", 200.0, 30), Item(3, "TV", 300.0, 50)
+            Item(1, "Game", 100.0, 20, "Kitchen"), Item(2, "Pen", 200.0, 30, "Test"), Item(3, "TV", 300.0, 50, "Stationery")
         ), onItemClick = {})
     }
 }
@@ -252,7 +233,7 @@ fun HomeBodyEmptyListPreview() {
 fun InventoryItemPreview() {
     InventoryTheme {
         InventoryItem(
-            Item(1, "Game", 100.0, 20),
+            Item(1, "Game", 100.0, 20, "Kitchen"),
         )
     }
 }
