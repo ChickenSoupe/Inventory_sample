@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2023 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.example.inventory
 
 import android.content.Context
@@ -38,8 +22,8 @@ class ItemDaoTest {
 
     private lateinit var itemDao: ItemDao
     private lateinit var inventoryDatabase: InventoryDatabase
-    private val item1 = Item(1, "Apples", 10.0, 20)
-    private val item2 = Item(2, "Bananas", 15.0, 97)
+    private val item1 = Item(1, "Apples", 10.0, 20, "Fruit")
+    private val item2 = Item(2, "Bananas", 15.0, 97, "Fruit")
 
     @Before
     fun createDb() {
@@ -99,12 +83,12 @@ class ItemDaoTest {
     @Throws(Exception::class)
     fun daoUpdateItems_updatesItemsInDB() = runBlocking {
         addTwoItemsToDb()
-        itemDao.update(Item(1, "Apples", 15.0, 25))
-        itemDao.update(Item(2, "Bananas", 5.0, 50))
+        itemDao.update(Item(1, "Apples", 15.0, 25,"Fruit"))
+        itemDao.update(Item(2, "Bananas", 5.0, 50,"Fruit"))
 
         val allItems = itemDao.getAllItems().first()
-        assertEquals(allItems[0], Item(1, "Apples", 15.0, 25))
-        assertEquals(allItems[1], Item(2, "Bananas", 5.0, 50))
+        assertEquals(allItems[0], Item(1, "Apples", 15.0, 25,"Fruit"))
+        assertEquals(allItems[1], Item(2, "Bananas", 5.0, 50,"Fruit"))
     }
 
     private suspend fun addOneItemToDb() {
