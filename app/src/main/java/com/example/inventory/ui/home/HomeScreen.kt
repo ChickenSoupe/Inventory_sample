@@ -178,7 +178,7 @@ private fun InventoryList(
 
         LazyColumn(
             modifier = modifier,
-            contentPadding = contentPadding
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             groupedItems.forEach { (category, itemsInCategory) ->
                 item {
