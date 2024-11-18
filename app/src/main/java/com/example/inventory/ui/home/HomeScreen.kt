@@ -193,6 +193,7 @@ private fun InventoryList(
                     )
                 }
             }
+
         }
     }
 
@@ -238,6 +239,15 @@ private fun InventoryItem(
                 text = stringResource(R.string.in_stock, item.quantity),
                 style = MaterialTheme.typography.titleMedium
             )
+
+            if (item.quantity < 5) {
+                Text(
+                    text = stringResource(R.string.low_stock_warning),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error, // Display in red color
+                    modifier = Modifier.padding(top = dimensionResource(id = R.dimen.padding_small))
+                )
+            }
         }
     }
 }

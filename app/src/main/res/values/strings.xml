@@ -23,4 +23,6 @@
     <string name="search">Search</string>
     <string name="categories_req">Category name</string>
     <string name="category">Category</string>
+    <string name="low_stock_warning">Low stock! Restocking Needed.</string>
+
 </resources>
