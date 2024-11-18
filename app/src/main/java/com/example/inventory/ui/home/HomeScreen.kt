@@ -25,10 +25,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -65,6 +68,7 @@ fun HomeScreen(
 ) {
     val homeUiState by viewModel.homeUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val searchQuery = remember { mutableStateOf("") }
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -92,12 +96,40 @@ fun HomeScreen(
             }
         },
     ) { innerPadding ->
-        HomeBody(
-            itemList = homeUiState.itemList,
-            onItemClick = navigateToItemUpdate,
-            modifier = modifier.fillMaxSize(),
-            contentPadding = innerPadding,
-        )
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
+        ) {
+            TextField(
+                value = searchQuery.value,
+                onValueChange = { searchQuery.value = it },
+                label = { Text(stringResource(R.string.search)) },
+                modifier = Modifier.fillMaxWidth()
+                    .padding(dimensionResource(id = R.dimen.padding_large))
+            )
+
+            val filteredItems = homeUiState.itemList.filter {
+                it.name.lowercase().contains(searchQuery.value.lowercase())
+            }
+
+            if (filteredItems.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.no_item_description),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(innerPadding)
+                )
+            } else {
+                InventoryList(
+                    itemList = filteredItems,
+                    onItemClick = { navigateToItemUpdate(it.id) },
+                    contentPadding = innerPadding,
+                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
+                )
+            }
+        }
     }
 }
 

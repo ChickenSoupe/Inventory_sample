@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,6 +20,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -125,6 +127,7 @@ fun ItemInputForm(
 ) {
     val categories = listOf("Appliances", "Electronics", "Kitchen", "Furniture", "General", "Others")
     var expanded by remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier,
@@ -145,7 +148,14 @@ fun ItemInputForm(
         )
         OutlinedTextField(
             value = itemDetails.price,
-            onValueChange = { onValueChange(itemDetails.copy(price = it)) },
+            onValueChange = {
+                val input = it.trim()
+                if (input.isNotEmpty() && input.toDoubleOrNull() == null) {
+                    showDialog = true
+                } else {
+                    onValueChange(itemDetails.copy(price = it))
+                }
+            },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             label = { Text(stringResource(R.string.item_price_req)) },
             colors = OutlinedTextFieldDefaults.colors(
@@ -158,9 +168,17 @@ fun ItemInputForm(
             enabled = enabled,
             singleLine = true
         )
+
         OutlinedTextField(
             value = itemDetails.quantity,
-            onValueChange = { onValueChange(itemDetails.copy(quantity = it)) },
+            onValueChange = {
+                val input = it.trim()
+                if (input.isNotEmpty() && input.toDoubleOrNull() == null) {
+                    showDialog = true
+                } else {
+                    onValueChange(itemDetails.copy(quantity = it))
+                }
+            },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             label = { Text(stringResource(R.string.quantity_req)) },
             colors = OutlinedTextFieldDefaults.colors(
@@ -213,6 +231,19 @@ fun ItemInputForm(
             Text(
                 text = stringResource(R.string.required_fields),
                 modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_medium))
+            )
+        }
+
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Error") },
+                text = { Text("Invalid price. Please enter a valid number.") },
+                confirmButton = {
+                    Button(onClick = { showDialog = false }) {
+                        Text("OK")
+                    }
+                }
             )
         }
     }
