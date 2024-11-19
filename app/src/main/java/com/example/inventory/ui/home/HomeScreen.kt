@@ -2,6 +2,7 @@ package com.example.inventory.ui.home
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,18 +12,23 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -32,6 +38,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -69,6 +76,13 @@ fun HomeScreen(
     val homeUiState by viewModel.homeUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val searchQuery = remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf("All") }
+    var isDropdownExpanded by remember { mutableStateOf(false) }
+
+    // Get unique categories from items
+    val categories = remember(homeUiState.itemList) {
+        listOf("All") + homeUiState.itemList.map { it.category }.distinct().sorted()
+    }
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -102,16 +116,56 @@ fun HomeScreen(
                 .padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
         ) {
-            TextField(
-                value = searchQuery.value,
-                onValueChange = { searchQuery.value = it },
-                label = { Text(stringResource(R.string.search)) },
-                modifier = Modifier.fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.padding_large))
-            )
+            // Search and Filter Row
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimensionResource(id = R.dimen.padding_large)),
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
+            ) {
+                // Search TextField
+                TextField(
+                    value = searchQuery.value,
+                    onValueChange = { searchQuery.value = it },
+                    label = { Text(stringResource(R.string.search)) },
+                    modifier = Modifier.weight(1f)
+                )
 
-            val filteredItems = homeUiState.itemList.filter {
-                it.name.lowercase().contains(searchQuery.value.lowercase())
+                // Category Dropdown
+                Box {
+                    OutlinedButton(
+                        onClick = { isDropdownExpanded = true },
+                        modifier = Modifier.height(56.dp)  // Match TextField height
+                    ) {
+                        Text(selectedCategory)
+                        Icon(
+                            Icons.Default.ArrowDropDown,
+                            contentDescription = "Select category"
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = isDropdownExpanded,
+                        onDismissRequest = { isDropdownExpanded = false }
+                    ) {
+                        categories.forEach { category ->
+                            DropdownMenuItem(
+                                text = { Text(category) },
+                                onClick = {
+                                    selectedCategory = category
+                                    isDropdownExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Filter items based on both search query and selected category
+            val filteredItems = homeUiState.itemList.filter { item ->
+                val matchesSearch = item.name.lowercase().contains(searchQuery.value.lowercase())
+                val matchesCategory = selectedCategory == "All" || item.category == selectedCategory
+                matchesSearch && matchesCategory
             }
 
             if (filteredItems.isEmpty()) {
