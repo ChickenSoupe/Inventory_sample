@@ -2,37 +2,37 @@ package com.example.inventory.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val md_theme_light_primary = Color(0xFF6B3DD4)
-val md_theme_light_onPrimary = Color(0xFFFFFFFF)
-val md_theme_light_primaryContainer = Color(0xFFE9DDFF)
-val md_theme_light_onPrimaryContainer = Color(0xFF22005D)
+val md_theme_light_primary = Color(0xFF003399) //top time thingy
+val md_theme_light_onPrimary = Color(0xFFFFFFFF) //sell button and "+" button color and save button
+val md_theme_light_primaryContainer = Color(0xFF012670) //button and inventory details
+val md_theme_light_onPrimaryContainer = Color(0xFFFFFFFF) //Item Details font
 val md_theme_light_secondary = Color(0xFF625B71)
 val md_theme_light_onSecondary = Color(0xFFFFFFFF)
-val md_theme_light_secondaryContainer = Color(0xFFE8DEF8)
+val md_theme_light_secondaryContainer = Color(0xFFFFCC00) //Add Item Field text
 val md_theme_light_onSecondaryContainer = Color(0xFF1E192B)
 val md_theme_light_tertiary = Color(0xFF7E5260)
 val md_theme_light_onTertiary = Color(0xFFFFFFFF)
 val md_theme_light_tertiaryContainer = Color(0xFFFFD9E3)
 val md_theme_light_onTertiaryContainer = Color(0xFF31101D)
 val md_theme_light_error = Color(0xFFBA1A1A)
-val md_theme_light_errorContainer = Color(0xFFFFDAD6)
+val md_theme_light_errorContainer = Color(0xFFCA685D)
 val md_theme_light_onError = Color(0xFFFFFFFF)
 val md_theme_light_onErrorContainer = Color(0xFF410002)
-val md_theme_light_background = Color(0xFFF3FEFF)
+val md_theme_light_background = Color(0xFFFCFDFD) //background literally
 val md_theme_light_onBackground = Color(0xFF002022)
 val md_theme_light_surface = Color(0xFFF3FEFF)
 val md_theme_light_onSurface = Color(0xFF002022)
-val md_theme_light_surfaceVariant = Color(0xFFE7E0EB)
-val md_theme_light_onSurfaceVariant = Color(0xFF49454E)
-val md_theme_light_outline = Color(0xFF7A757F)
-val md_theme_light_inverseOnSurface = Color(0xFFC3FBFF)
-val md_theme_light_inverseSurface = Color(0xFF00373A)
-val md_theme_light_inversePrimary = Color(0xFFCFBCFF)
+val md_theme_light_surfaceVariant = Color(0xFF99B9F7) //inventory card
+val md_theme_light_onSurfaceVariant = Color(0xFF000000) //homescreen inventory font color
+val md_theme_light_outline = Color(0xFF000000) //outline color
+val md_theme_light_inverseOnSurface = Color(0xFFFFFFFF) //item added successfully FONT
+val md_theme_light_inverseSurface = Color(0xFF000000) //item added successfully
+val md_theme_light_inversePrimary = Color(0xFF000000) //Add Item FONT
 val md_theme_light_surfaceTint = Color(0xFF6B3DD4)
 val md_theme_light_outlineVariant = Color(0xFFCAC4CF)
 val md_theme_light_scrim = Color(0xFF000000)
 
-val md_theme_dark_primary = Color(0xFFCFBCFF)
+val md_theme_dark_primary = Color(0xFF000000)
 val md_theme_dark_onPrimary = Color(0xFF3A0092)
 val md_theme_dark_primaryContainer = Color(0xFF531BBC)
 val md_theme_dark_onPrimaryContainer = Color(0xFFE9DDFF)
