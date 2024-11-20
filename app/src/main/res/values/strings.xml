@@ -24,5 +24,7 @@
     <string name="categories_req">Category name</string>
     <string name="category">Category</string>
     <string name="low_stock_warning">Low stock! Restocking Needed.</string>
-
+    <string name="item_added_success">Item added successfully!</string>
+    <string name="item_added_error">Error: Item could not be added.</string>
+    <string name="dismiss">Dismiss</string>
 </resources>
