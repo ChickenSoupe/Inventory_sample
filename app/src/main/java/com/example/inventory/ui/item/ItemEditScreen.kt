@@ -60,6 +60,7 @@ fun ItemEditScreen(
                     navigateBack()
                 }
             },
+            viewModel = viewModel,
             modifier = Modifier
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),

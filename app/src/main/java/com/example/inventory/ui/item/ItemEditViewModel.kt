@@ -1,5 +1,6 @@
 package com.example.inventory.ui.item
 
+import android.graphics.Bitmap
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -44,7 +45,11 @@ class ItemEditViewModel(
             itemsRepository.updateItem(itemUiState.itemDetails.toItem())
         }
     }
-
+    fun setImage(bitmap: Bitmap) {
+        itemUiState = itemUiState.copy(
+            itemDetails = itemUiState.itemDetails.copy(image = bitmap)
+        )
+    }
     /**
      * Updates the [itemUiState] with the value provided in the argument. This method also triggers
      * a validation for input values.
