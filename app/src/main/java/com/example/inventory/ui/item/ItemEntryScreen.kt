@@ -1,10 +1,16 @@
 package com.example.inventory.ui.item
 
+import android.net.Uri
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -27,11 +33,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.inventory.InventoryTopAppBar
 import com.example.inventory.R
@@ -78,6 +88,7 @@ fun ItemEntryScreen(
                     navigateBack()
                 }
             },
+            viewModel = viewModel,
             modifier = Modifier
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
@@ -95,6 +106,7 @@ fun ItemEntryBody(
     itemUiState: ItemUiState,
     onItemValueChange: (ItemDetails) -> Unit,
     onSaveClick: () -> Unit,
+    viewModel: ViewModel? = null,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -104,6 +116,7 @@ fun ItemEntryBody(
         ItemInputForm(
             itemDetails = itemUiState.itemDetails,
             onValueChange = onItemValueChange,
+            viewModel = viewModel as? ItemEntryViewModel ?: viewModel as? ItemEditViewModel, // Cast to the appropriate ViewModel
             modifier = Modifier.fillMaxWidth()
         )
         Button(
@@ -123,11 +136,28 @@ fun ItemInputForm(
     itemDetails: ItemDetails,
     modifier: Modifier = Modifier,
     onValueChange: (ItemDetails) -> Unit = {},
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    viewModel: ViewModel?
 ) {
     val categories = listOf("Appliances", "Electronics", "Kitchen", "Furniture", "General", "Others")
     var expanded by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    // Image picker launcher
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+
+            // Handle image setting for both entry and edit view models
+            when (viewModel) {
+                is ItemEntryViewModel -> viewModel.setImage(bitmap)
+                is ItemEditViewModel -> viewModel.setImage(bitmap)
+            }
+        }
+    }
 
     Column(
         modifier = modifier,
@@ -225,8 +255,29 @@ fun ItemInputForm(
                     )
                 }
             }
+
         }
 
+        // Add image selection button and preview
+        Button(
+            onClick = {
+                imagePickerLauncher.launch("image/*")
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Select Image")
+        }
+
+        // Image preview if an image is selected
+        itemDetails.image?.let { bitmap ->
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = "Selected Image",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+            )
+        }
         if (enabled) {
             Text(
                 text = stringResource(R.string.required_fields),

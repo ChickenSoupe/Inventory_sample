@@ -1,69 +1,141 @@
+// InventoryNavHost.kt
 package com.example.inventory.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.inventory.AuthViewModel
+import com.example.inventory.ui.*
 import com.example.inventory.ui.home.HomeDestination
 import com.example.inventory.ui.home.HomeScreen
-import com.example.inventory.ui.item.ItemDetailsDestination
-import com.example.inventory.ui.item.ItemDetailsScreen
-import com.example.inventory.ui.item.ItemEditDestination
-import com.example.inventory.ui.item.ItemEditScreen
-import com.example.inventory.ui.item.ItemEntryDestination
-import com.example.inventory.ui.item.ItemEntryScreen
+import com.example.inventory.ui.item.*
+import com.example.inventory.ui.login.LoginDestination
+import com.example.inventory.ui.login.LoginScreen
+import com.example.inventory.ui.signup.SignUpDestination
+import com.example.inventory.ui.signup.SignUpScreen
 
-/**
- * Provides Navigation graph for the application.
- */
 @Composable
 fun InventoryNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
+    authViewModel: AuthViewModel = viewModel()
 ) {
+    val startDestination = if (authViewModel.isLoggedIn.value) {
+        HomeDestination.route
+    } else {
+        LoginDestination.route
+    }
+
     NavHost(
         navController = navController,
-        startDestination = HomeDestination.route,
+        startDestination = startDestination,
         modifier = modifier
     ) {
-        composable(route = HomeDestination.route) {
-            HomeScreen(
-                navigateToItemEntry = { navController.navigate(ItemEntryDestination.route) },
-                navigateToItemUpdate = {
-                    navController.navigate("${ItemDetailsDestination.route}/${it}")
+        // Login Screen
+        composable(route = LoginDestination.route) {
+            LoginScreen(
+                onLoginSuccess = {
+                    authViewModel.loginUser()
+                    navController.navigate(HomeDestination.route) {
+                        popUpTo(LoginDestination.route) { inclusive = true }
+                    }
+                },
+                onSignUpClick = {
+                    navController.navigate(SignUpDestination.route)
                 }
             )
         }
-        composable(route = ItemEntryDestination.route) {
-            ItemEntryScreen(
-                navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() }
+
+        // Sign-Up Screen
+        composable(route = SignUpDestination.route) {
+            SignUpScreen(
+                onSignUpSuccess = {
+                    navController.navigate(LoginDestination.route) {
+                        popUpTo(SignUpDestination.route) { inclusive = true }
+                    }
+                }
             )
         }
+
+        // Home Screen
+        composable(route = HomeDestination.route) {
+            if (authViewModel.isLoggedIn.value) {
+                HomeScreen(
+                    navigateToItemEntry = { navController.navigate(ItemEntryDestination.route) },
+                    navigateToItemUpdate = { itemId ->
+                        navController.navigate("${ItemDetailsDestination.route}/$itemId")
+                    },
+//                    onLogout = {
+//                        authViewModel.logoutUser()
+//                        navController.navigate(LoginDestination.route) {
+//                            popUpTo(HomeDestination.route) { inclusive = true }
+//                        }
+//                    }
+                )
+            } else {
+                navController.navigate(LoginDestination.route) {
+                    popUpTo(HomeDestination.route) { inclusive = true }
+                }
+            }
+        }
+
+        // Item Entry Screen
+        composable(route = ItemEntryDestination.route) {
+            if (authViewModel.isLoggedIn.value) {
+                ItemEntryScreen(
+                    navigateBack = { navController.popBackStack() },
+                    onNavigateUp = { navController.navigateUp() }
+                )
+            } else {
+                navController.navigate(LoginDestination.route) {
+                    popUpTo(ItemEntryDestination.route) { inclusive = true }
+                }
+            }
+        }
+
+        // Item Details Screen
         composable(
             route = ItemDetailsDestination.routeWithArgs,
             arguments = listOf(navArgument(ItemDetailsDestination.itemIdArg) {
                 type = NavType.IntType
             })
         ) {
-            ItemDetailsScreen(
-                navigateToEditItem = { navController.navigate("${ItemEditDestination.route}/$it") },
-                navigateBack = { navController.navigateUp() }
-            )
+            if (authViewModel.isLoggedIn.value) {
+                ItemDetailsScreen(
+                    navigateToEditItem = { itemId ->
+                        navController.navigate("${ItemEditDestination.route}/$itemId")
+                    },
+                    navigateBack = { navController.navigateUp() }
+                )
+            } else {
+                navController.navigate(LoginDestination.route) {
+                    popUpTo(ItemDetailsDestination.route) { inclusive = true }
+                }
+            }
         }
+
+        // Item Edit Screen
         composable(
             route = ItemEditDestination.routeWithArgs,
             arguments = listOf(navArgument(ItemEditDestination.itemIdArg) {
                 type = NavType.IntType
             })
         ) {
-            ItemEditScreen(
-                navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() }
-            )
+            if (authViewModel.isLoggedIn.value) {
+                ItemEditScreen(
+                    navigateBack = { navController.popBackStack() },
+                    onNavigateUp = { navController.navigateUp() }
+                )
+            } else {
+                navController.navigate(LoginDestination.route) {
+                    popUpTo(ItemEditDestination.route) { inclusive = true }
+                }
+            }
         }
     }
 }
