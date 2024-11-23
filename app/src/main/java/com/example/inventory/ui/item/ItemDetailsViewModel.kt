@@ -11,9 +11,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel to retrieve, update and delete an item from the [ItemsRepository]'s data source.
- */
 class ItemDetailsViewModel(
     savedStateHandle: SavedStateHandle,
     private val itemsRepository: ItemsRepository,
@@ -21,10 +18,6 @@ class ItemDetailsViewModel(
 
     private val itemId: Int = checkNotNull(savedStateHandle[ItemDetailsDestination.itemIdArg])
 
-    /**
-     * Holds the item details ui state. The data is retrieved from [ItemsRepository] and mapped to
-     * the UI state.
-     */
     val uiState: StateFlow<ItemDetailsUiState> =
         itemsRepository.getItemStream(itemId)
             .filterNotNull()
@@ -36,9 +29,7 @@ class ItemDetailsViewModel(
                 initialValue = ItemDetailsUiState()
             )
 
-    /**
-     * Reduces the item quantity by one and update the [ItemsRepository]'s data source.
-     */
+
     fun reduceQuantityByOne() {
         viewModelScope.launch {
             val currentItem = uiState.value.itemDetails.toItem()
@@ -48,9 +39,25 @@ class ItemDetailsViewModel(
         }
     }
 
-    /**
-     * Deletes the item from the [ItemsRepository]'s data source.
-     */
+    fun reduceQuantityByTen() {
+        viewModelScope.launch {
+            val currentItem = uiState.value.itemDetails.toItem()
+            if (currentItem.quantity > 0) {
+                itemsRepository.updateItem(currentItem.copy(quantity = currentItem.quantity - 10))
+            }
+        }
+    }
+
+    fun reduceQuantityByHundred() {
+        viewModelScope.launch {
+            val currentItem = uiState.value.itemDetails.toItem()
+            if (currentItem.quantity > 0) {
+                itemsRepository.updateItem(currentItem.copy(quantity = currentItem.quantity - 100))
+            }
+        }
+    }
+
+
     suspend fun deleteItem() {
         itemsRepository.deleteItem(uiState.value.itemDetails.toItem())
     }
@@ -60,9 +67,6 @@ class ItemDetailsViewModel(
     }
 }
 
-/**
- * UI state for ItemDetailsScreen
- */
 data class ItemDetailsUiState(
     val outOfStock: Boolean = true,
     val itemDetails: ItemDetails = ItemDetails()

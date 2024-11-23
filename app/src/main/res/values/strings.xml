@@ -27,4 +27,6 @@
     <string name="item_added_success">Item added successfully!</string>
     <string name="item_added_error">Error: Item could not be added.</string>
     <string name="dismiss">Dismiss</string>
+    <string name="reduce_by_ten">Sell 10</string>
+    <string name="reduce_by_hundred">Sell 100</string>
 </resources>

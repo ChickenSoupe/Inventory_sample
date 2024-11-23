@@ -101,11 +101,9 @@ fun ItemDetailsScreen(
         ItemDetailsBody(
             itemDetailsUiState = uiState.value,
             onSellItem = { viewModel.reduceQuantityByOne() },
+            onReduceByTen = { viewModel.reduceQuantityByTen() },
+            onReduceByHundred = { viewModel.reduceQuantityByHundred() },
             onDelete = {
-                // Note: If the user rotates the screen very fast, the operation may get cancelled
-                // and the item may not be deleted from the Database. This is because when config
-                // change occurs, the Activity will be recreated and the rememberCoroutineScope will
-                // be cancelled - since the scope is bound to composition.
                 coroutineScope.launch {
                     viewModel.deleteItem()
                     navigateBack()
@@ -126,6 +124,8 @@ fun ItemDetailsScreen(
 private fun ItemDetailsBody(
     itemDetailsUiState: ItemDetailsUiState,
     onSellItem: () -> Unit,
+    onReduceByTen: () -> Unit,
+    onReduceByHundred: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -144,6 +144,20 @@ private fun ItemDetailsBody(
             enabled = !itemDetailsUiState.outOfStock
         ) {
             Text(stringResource(R.string.sell))
+        }
+        Button(
+            onClick = onReduceByTen,
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.small,
+            enabled = itemDetailsUiState.itemDetails.quantity.toIntOrNull() ?: 0 >= 10        ) {
+            Text(stringResource(R.string.reduce_by_ten))
+        }
+        Button(
+            onClick = onReduceByHundred,
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.small,
+            enabled = itemDetailsUiState.itemDetails.quantity.toIntOrNull() ?: 10 >= 100        ) {
+            Text(stringResource(R.string.reduce_by_hundred))
         }
         OutlinedButton(
             onClick = { deleteConfirmationRequired = true },
@@ -164,6 +178,7 @@ private fun ItemDetailsBody(
         }
     }
 }
+
 
 
 @Composable
@@ -269,14 +284,4 @@ private fun DeleteConfirmationDialog(
                 Text(text = stringResource(R.string.yes))
             }
         })
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ItemDetailsScreenPreview() {
-    InventoryTheme {
-        ItemDetailsBody(ItemDetailsUiState(
-            outOfStock = true, itemDetails = ItemDetails(1, "Pen", "$100", "10")
-        ), onSellItem = {}, onDelete = {})
-    }
 }
