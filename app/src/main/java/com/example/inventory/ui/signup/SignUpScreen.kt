@@ -1,6 +1,6 @@
 package com.example.inventory.ui.signup
 
-// SignUpScreen.kt
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -9,9 +9,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.inventory.R
 import com.example.inventory.data.InventoryDatabase
 import com.example.inventory.data.User
 import kotlinx.coroutines.launch
@@ -35,6 +38,25 @@ fun SignUpScreen(onSignUpSuccess: () -> Unit) {
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
+        Image(
+            painter = painterResource(R.drawable.ikea_logo),
+            contentDescription = "Inventory Logo",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp)
+                .padding(bottom = 16.dp)
+        )
+
+
+        Text(
+            text = "Sign Up",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp),
+            textAlign = TextAlign.Center
+        )
+
         TextField(
             value = username,
             onValueChange = { username = it },

@@ -17,18 +17,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.inventory.R.string
 import com.example.inventory.ui.navigation.InventoryNavHost
 
-/**
- * Top level composable that represents screens for the application.
- */
 @Composable
 fun InventoryApp(navController: NavHostController = rememberNavController()) {
     val authViewModel: AuthViewModel = viewModel()
     InventoryNavHost(navController = navController, authViewModel = authViewModel)
 }
 
-/**
- * App bar to display title and conditionally display the back navigation.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InventoryTopAppBar(

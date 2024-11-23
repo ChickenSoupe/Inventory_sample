@@ -51,7 +51,6 @@ fun InventoryNavHost(
             )
         }
 
-        // Sign-Up Screen
         composable(route = SignUpDestination.route) {
             SignUpScreen(
                 onSignUpSuccess = {
@@ -62,7 +61,6 @@ fun InventoryNavHost(
             )
         }
 
-        // Home Screen
         composable(route = HomeDestination.route) {
             if (authViewModel.isLoggedIn.value) {
                 HomeScreen(
@@ -98,7 +96,6 @@ fun InventoryNavHost(
             }
         }
 
-        // Item Details Screen
         composable(
             route = ItemDetailsDestination.routeWithArgs,
             arguments = listOf(navArgument(ItemDetailsDestination.itemIdArg) {
@@ -119,7 +116,6 @@ fun InventoryNavHost(
             }
         }
 
-        // Item Edit Screen
         composable(
             route = ItemEditDestination.routeWithArgs,
             arguments = listOf(navArgument(ItemEditDestination.itemIdArg) {

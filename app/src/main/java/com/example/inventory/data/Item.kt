@@ -17,11 +17,9 @@ data class Item(
     val price: Double,
     val quantity: Int,
     val category: String,
-    val image: Bitmap? = null  // Optional image field
+    val image: Bitmap? = null
 )
 
-
-// TypeConverter to handle Bitmap to ByteArray conversion
 class BitmapConverter {
     @TypeConverter
     fun fromBitmap(bitmap: Bitmap?): ByteArray? {

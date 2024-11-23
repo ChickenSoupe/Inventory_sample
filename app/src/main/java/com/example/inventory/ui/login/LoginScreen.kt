@@ -2,6 +2,7 @@ package com.example.inventory.ui.login
 
 // LoginScreen.kt
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -10,10 +11,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.inventory.R
 import com.example.inventory.data.InventoryDatabase
 import kotlinx.coroutines.launch
 import org.mindrot.jbcrypt.BCrypt
@@ -35,6 +39,25 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onSignUpClick: () -> Unit) {
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
+        Image(
+            painter = painterResource(R.drawable.ikea_logo),
+            contentDescription = "Inventory Logo",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp)
+                .padding(bottom = 16.dp)
+        )
+
+
+        Text(
+            text = "IKEA Inventory",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp),
+            textAlign = TextAlign.Center
+        )
+
         TextField(
             value = username,
             onValueChange = { username = it },
@@ -63,7 +86,6 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onSignUpClick: () -> Unit) {
                 coroutineScope.launch {
                     val user = userDao.getUser(username)
                     if (user != null && BCrypt.checkpw(password, user.passwordHash)) {
-                        // Login successful
                         onLoginSuccess()
                     } else {
                         loginError = "Invalid username or password"

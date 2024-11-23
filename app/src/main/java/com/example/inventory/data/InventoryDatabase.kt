@@ -9,7 +9,7 @@ import androidx.room.TypeConverters
 
 @Database(
     entities = [Item::class, User::class],
-    version = 5,  // Increment version number
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(BitmapConverter::class)

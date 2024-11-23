@@ -12,19 +12,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel to retrieve all items in the Room database.
- */
 class HomeViewModel(itemsRepository: ItemsRepository) : ViewModel() {
 
     private val _messageFlow = MutableSharedFlow<String>()
     val messageFlow = _messageFlow.asSharedFlow()
 
     private var lastItemCount = 0
-    /**
-     * Holds home ui state. The list of items are retrieved from [ItemsRepository] and mapped to
-     * [HomeUiState]
-     */
+
     val homeUiState: StateFlow<HomeUiState> =
         itemsRepository.getAllItemsStream().map { items ->
             if (items.size > lastItemCount) {
@@ -45,7 +39,4 @@ class HomeViewModel(itemsRepository: ItemsRepository) : ViewModel() {
     }
 }
 
-/**
- * Ui State for HomeScreen
- */
 data class HomeUiState(val itemList: List<Item> = listOf())
