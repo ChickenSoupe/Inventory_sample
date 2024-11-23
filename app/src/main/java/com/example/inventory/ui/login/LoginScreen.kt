@@ -3,11 +3,16 @@ package com.example.inventory.ui.login
 // LoginScreen.kt
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.inventory.data.InventoryDatabase
 import kotlinx.coroutines.launch
@@ -22,6 +27,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onSignUpClick: () -> Unit) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var loginError by remember { mutableStateOf<String?>(null) }
+    var passwordVisible by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -32,14 +38,24 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onSignUpClick: () -> Unit) {
         TextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Username") }
+            label = { Text("Username") },
+            modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(8.dp))
         TextField(
             value = password,
             onValueChange = { password = it },
             label = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation()
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                        contentDescription = "Toggle password visibility"
+                    )
+                }
+            }
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
@@ -58,11 +74,21 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onSignUpClick: () -> Unit) {
         ) {
             Text("Login")
         }
-        TextButton(onClick = onSignUpClick) {
-            Text("Don't have an account? Sign Up")
+        Row(modifier = Modifier.padding(top = 16.dp)) {
+            TextButton(onClick = onSignUpClick) {
+                Text("Don't have an account? Sign Up")
+            }
+            TextButton(onClick = onLoginSuccess) {
+                Text("Guest Login")
+            }
         }
         loginError?.let {
             Text(text = it, color = MaterialTheme.colorScheme.error)
         }
     }
 }
+@Preview(showBackground = true)
+@Composable
+ fun Loginpreview() {
+     LoginScreen(onLoginSuccess = {}, onSignUpClick = {})
+ }
