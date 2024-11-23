@@ -69,10 +69,21 @@ object HomeDestination : NavigationDestination {
     override val titleRes = R.string.app_name
 }
 
-/**
- * Entry route for Home screen
- */
 @OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Composable function that represents the Home screen of the application.
+ *
+ * This screen displays a list of inventory items, allows filtering by category,
+ * and searching by item name. It includes a top app bar, a floating action button
+ * for adding new items, and a snackbar for displaying messages.
+ *
+ * @param navigateToItemEntry A lambda function to navigate to the item entry screen.
+ * @param navigateToItemUpdate A lambda function to navigate to the item update screen,
+ * taking the item ID as a parameter.
+ * @param modifier [Modifier] to be applied to the root layout.
+ * @param viewModel Instance of [HomeViewModel] to manage UI state and handle user interactions.
+ */
+
 @Composable
 fun HomeScreen(
     navigateToItemEntry: () -> Unit,
