@@ -3,6 +3,7 @@ Inventory app
 Introduction
 ------------
 An Introductory code for Assignment purposes
+
 Group members:
 1. 	 Gan Jia Ting I21020362
 2. 	 Amir Faisal Azman I20019701
@@ -44,11 +45,10 @@ Requirements
    o Ensure data is stored locally on the device and can be accessed offline.
 
 5. Additional Features
-   FACULTY OF DATA SCIENCE AND INFORMATION TECHNOLOGY
-   Coursework Specifications Page 5
    o Data Validation: Validate user input to ensure data integrity.
    o Error Handling: Implement error handling for database operations.
    o User Notifications: Notify users of successful or failed operations.
+
    Technical Requirements
 
 1. Programming Language
