@@ -2,6 +2,7 @@ package com.example.inventory.ui.item
 
 import android.net.Uri
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -117,7 +118,7 @@ fun ItemEntryBody(
         )
         Button(
             onClick = onSaveClick,
-            enabled = itemUiState.isEntryValid,
+            enabled = itemUiState.isEntryValid && itemUiState.itemDetails.category.isNotEmpty(),
             shape = MaterialTheme.shapes.small,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -229,13 +230,26 @@ fun ItemInputForm(
                     focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                     unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                     disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    focusedBorderColor = if (itemDetails.category.isEmpty()) MaterialTheme.colorScheme.error
+                    else MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = if (itemDetails.category.isEmpty()) MaterialTheme.colorScheme.error
+                    else MaterialTheme.colorScheme.outline
                 ),
                 modifier = Modifier
                     .menuAnchor() // Anchor for dropdown
                     .fillMaxWidth(),
                 enabled = enabled,
                 readOnly = true, // Prevent manual input when using dropdown
-                singleLine = true
+                singleLine = true,
+                supportingText = {
+                    if (itemDetails.category.isEmpty()) {
+                        Text(
+                            text = "Category is required",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                },
+                isError = itemDetails.category.isEmpty()
             )
             ExposedDropdownMenu(
                 expanded = expanded,
