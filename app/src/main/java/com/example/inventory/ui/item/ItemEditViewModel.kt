@@ -8,6 +8,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.ItemsRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -22,6 +24,9 @@ class ItemEditViewModel(
 
     private val itemId: Int = checkNotNull(savedStateHandle[ItemEditDestination.itemIdArg])
 
+    private val _messageFlow = MutableSharedFlow<String>()
+    val messageFlow = _messageFlow.asSharedFlow()
+
     init {
         viewModelScope.launch {
             itemUiState = itemsRepository.getItemStream(itemId)
@@ -34,6 +39,7 @@ class ItemEditViewModel(
     suspend fun updateItem() {
         if (validateInput(itemUiState.itemDetails)) {
             itemsRepository.updateItem(itemUiState.itemDetails.toItem())
+            _messageFlow.emit("Item updated successfully!")
         }
     }
     fun setImage(bitmap: Bitmap) {

@@ -14,18 +14,12 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(itemsRepository: ItemsRepository) : ViewModel() {
 
-    private val _messageFlow = MutableSharedFlow<String>()
-    val messageFlow = _messageFlow.asSharedFlow()
+
 
     private var lastItemCount = 0
 
     val homeUiState: StateFlow<HomeUiState> =
         itemsRepository.getAllItemsStream().map { items ->
-            if (items.size > lastItemCount) {
-                viewModelScope.launch {
-                    _messageFlow.emit("Item added successfully!")
-                }
-            }
             lastItemCount = items.size
             HomeUiState(items)
         }.stateIn(

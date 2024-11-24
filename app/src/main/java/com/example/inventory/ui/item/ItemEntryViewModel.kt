@@ -1,18 +1,26 @@
 package com.example.inventory.ui.item
 
 import android.graphics.Bitmap
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.Item
 import com.example.inventory.data.ItemsRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import java.text.NumberFormat
 
 class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewModel() {
 
     var itemUiState by mutableStateOf(ItemUiState())
         private set
+
+    private val _messageFlow = MutableSharedFlow<String>()
+    val messageFlow = _messageFlow.asSharedFlow()
 
     fun updateUiState(itemDetails: ItemDetails) {
         itemUiState =
@@ -22,6 +30,7 @@ class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewMod
     suspend fun saveItem() {
         if (validateInput()) {
             itemsRepository.insertItem(itemUiState.itemDetails.toItem())
+            _messageFlow.emit("Item added successfully!")
         }
     }
 

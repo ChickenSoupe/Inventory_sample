@@ -93,11 +93,7 @@ fun HomeScreen(
     var isDropdownExpanded by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(viewModel.messageFlow) {
-        viewModel.messageFlow.collect { message ->
-            snackbarHostState.showSnackbar(message)
-        }
-    }
+
 
     // Get unique categories from items
     val categories = remember(homeUiState.itemList) {
