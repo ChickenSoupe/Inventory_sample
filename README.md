@@ -1,6 +1,6 @@
 Inventory app
 ==================================
-Introduction
+IBM4203 Project
 ------------
 An Introductory code for Assignment purposes
 
